@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./Styles/style.css">
+  <title>TechnicalPage</title>
+
+
+</head>
+
+<nav id="navbar">
+  <header>Usar Promesas</header>
+  <a href="#Introducción" class="nav-link">Introducción</a>
+  <a href="#Garantias" class="nav-link">Garantias</a>
+  <a href="#Encadenamiento" class="nav-link">Encadenamiento</a>
+  <a href="#Propagacion_de_errores" class="nav-link">Propagacion de errores</a>
+  <a href="#Eventos_de_rechazo" class="nav-link">Eventos de rechazo</a>
+
+</nav>
+
+<body>
+  <main id="main-doc">
+    <section class="main-section" id="Introducción">
+      <header>Introducción</header>
+      <p>Una Promise (promesa en castellano) es un objeto que representa la terminación o el fracaso de una operación
+        asíncrona. Dado que la mayoría de las personas consumen promises ya creadas, esta guía explicará primero cómo
+        consumirlas, y luego cómo crearlas.</p>
+
+      <p>Esencialmente, una promesa es un objeto devuelto al cuál se adjuntan funciones callback, en lugar de pasar
+        callbacks a una función.</p>
+
+      <p> Considera la función crearArchivoAudioAsync(), el cuál genera de manera asíncrona un archivo de sonido de
+        acuerdo a un archivo de configuración, y dos funciones callback, una que es llamada si el archivo de audio es
+        creado satisfactoriamente, y la otra que es llamada si ocurre un error. El código podría verse de la siguiente
+        forma:</p>
+      <pre>
+      <code>
+        function exitoCallback(resultado) { 
+          console.log("Archivo de audio disponible en la URL " + resultado);
+        }
+        
+        function falloCallback(error) {
+          console.log("Error generando archivo de audio " + error);
+        }
+        
+        crearArchivoAudioAsync(audioConfig, exitoCallback, falloCallback);
+      </code>
+    </pre>
+
+      <p>... las funciones modernas devuelven un objeto promise al que puedes adjuntar funciones de retorno (callbacks).
+        Si crearArchivoAudioAsync fuera escrita de manera tal que devuelva un objeto promise, usarla sería tan simple
+        como esto:</p>
+
+      <pre>
+          <code>
+            crearArchivoAudioAsync(audioConfig).then(exitoCallback, falloCallback);
+          </code>
+        </pre>
+
+      <p>Lo cuál es la versión corta de:</p>
+
+      <pre>
+          <code>
+            const promesa = crearArchivoAudioAsync(audioConfig);
+            promesa.then(exitoCallback, falloCallback);
+          </code>
+        </pre>
+
+      <p>Llamamos a esto una llamada a función asíncrona. Esta convención tiene varias ventajas. Exploraremos cada una
+        de ellas.</p>
+
+
+    </section>
+
+    <section class="main-section" id="Garantias">
+      <header>Garantias</header>
+      <p>A diferencia de las funciones callback pasadas al "viejo estilo", una promesa viene con algunas garantías:</p>
+
+      <ul>
+        <li>Las funciones callback nunca serán llamadas antes de la terminación de la ejecución actual del bucle de
+          eventos de JavaScript.</li>
+        <li>Las funciones callback añadidas con then() incluso después del éxito o fracaso de la operación asíncrona
+          serán llamadas como se mostró anteriormente.</li>
+        <li>Múltiples funciones callback pueden ser añadidas llamando a then() varias veces. Cada una de ellas es
+          ejecutada una seguida de la otra, en el orden en el que fueron insertadas.</li>
+      </ul>
+
+
+      <p>Una de las grandes ventajas de usar promises es el encadenamiento, explicado a continuación.</p>
+    </section>
+
+    <section class="main-section" id="Encadenamiento">
+      <header>Encadenamiento</header>
+      <p>Una necesidad común es el ejecutar dos o más operaciones asíncronas seguidas, donde cada operación posterior se
+        inicia cuando la operación previa tiene éxito, con el resultado del paso previo. Logramos esto creando una
+        cadena de objetos promises.</p>
+
+      <p>Aquí está la magia: la función then() devuelve una promesa nueva, diferente de la original:</p>
+    
+      <pre>
+        <code>
+          const promesa = hazAlgo();
+          const promesa2 = promesa.then(exitoCallback, falloCallback);
+        </code>
+      </pre>
+    </section>
+
+    <section class="main-section" id="Propagacion_de_errores">
+      <header>Propagacion de errores</header>
+      <p>Tal vez recuerdes haber visto falloCallback tres veces en la pirámide en un ejemplo anterior, en comparación
+        con sólo una vez al final de la cadena de promesas:</p>
+
+      <pre>
+        <code>
+          hazAlgo()
+          .then(resultado => hazAlgoMas(valor))
+          .then(nuevoResultado => hazLaTerceraCosa(nuevoResultado))
+          .then(resultadoFinal => console.log(`Obtenido el resultado final: ${resultadoFinal}`))
+          .catch(falloCallback);
+        </code>
+      </pre>
+    </section>
+
+    <section class="main-section" id="Eventos_de_rechazo">
+      <header>Eventos de rechazo</header>
+      <p>Cuando una promesa es rechazada, uno de los dos eventos se envía al ámbito global (generalmente, éste es el
+        window, o, si se utiliza en un trabajador web, es el Worker u otra interfaz basada en un trabajador). Los dos
+        eventos son:</p>
+       <li>rejectionhandled (en-US)</li> 
+        <p>Se envía cuando se rechaza una promesa, una vez que el rechazo ha sido manejado por la función reject del ejecutor.</p>
+        <li>rejectionhandled (en-US)</li>
+    </section>
+
+
+
+
+  </main>
+</body>
+
+
+</html>
